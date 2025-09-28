@@ -1,0 +1,1 @@
+# ostrichdb-go
