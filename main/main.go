@@ -17,12 +17,12 @@ func main(){
     //Mandatory: Create a Project builder pass in desired project name.
     // Note: If a project already exists in you OstrichDB instance pass the name
     //  		of the already existing project
-    project:= (client).NewProjectBuilder("myCoolProject")
+    project:= sdk.NewProjectBuilder(client, "myCoolProject")
 
     //Mandatory: Create a Collection builder pass in desired Collection name
 
-    collection:= (client).NewCollectionBuilder(project, "myFirstCollection")
-    collectionErr:= (client).CreateCollection(collection)
+    collection:= sdk.NewCollectionBuilder(project, "myFirstCollection")
+    collectionErr:= sdk.CreateCollection(collection)
 
     if collectionErr != nil {
      	//Handle error
