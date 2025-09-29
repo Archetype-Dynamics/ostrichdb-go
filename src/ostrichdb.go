@@ -9,7 +9,7 @@ import (
 
 
 
-type ProjectBuilder struct {
+type Project struct {
 	Client *Client
 	Name string
 }
@@ -45,8 +45,8 @@ func make_new_client(config Config) *Client {
 }
 
 
-func (c *Client) make_new_project_builder(projName string) *ProjectBuilder{
-	return &ProjectBuilder {
+func (c *Client) make_new_project_builder(projName string) *Project{
+	return &Project{
 		Client: c,
 		Name: projName,
 	}

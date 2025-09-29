@@ -12,3 +12,12 @@ func Delete(path string) (*http.Response, error) {
     }
     return client.Do(request)
 }
+
+func Put(path string) (*http.Response, error) {
+	client := &http.Client{}
+    request, err := http.NewRequest("PUT", path, nil)
+    if err != nil {
+        return nil, err
+    }
+    return client.Do(request)
+}
