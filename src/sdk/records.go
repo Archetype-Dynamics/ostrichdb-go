@@ -1,29 +1,21 @@
 package sdk
 
-import "./lib"
+import "../lib"
 import (
-    "fmt"
-    "net/http"
+    // "fmt"
+    // "net/http"
 )
 
-
-type Record struct {
-	Client *Client
-	Project *Project
-	Collection *Collection
-	Cluster *Cluster
-	Name string
-	Type string
-	Value string
-}
-
-
-func (c *Client) NewRecordBuilder(proj *Project, col *Collection, clu *Cluster, name string) *Record{
-	return &Record{
-		Client: c,
+func NewRecordBuilder(proj *lib.Project, col *lib.Collection, clu *lib.Cluster, name string) *lib.Record{
+	return &lib.Record{
+		Client: proj.Client,
 		Project: proj,
 		Collection: col,
 		Cluster: clu,
 		Name: name,
 	}
 }
+
+// func CreateRecord(record *lib.Record) error{
+// 	// project:= record.
+// }

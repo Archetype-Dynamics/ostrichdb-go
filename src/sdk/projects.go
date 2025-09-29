@@ -1,25 +1,21 @@
 package sdk
 
-import "./lib"
+import "../lib"
 import (
     "fmt"
     "net/http"
 )
 
 
-type Project struct {
-	Client *Client
-	Name string
-}
 
-func (c *Client) NewProjectBuilder(projName string) *Project{
-	return &Project{
+func NewProjectBuilder(c *lib.Client ,projName string) *lib.Project{
+	return &lib.Project{
 		Client: c,
 		Name: projName,
 	}
 }
 
-func (c *Client) create_project(proj *Project) error{
+func CreateProject(proj *lib.Project) error{
 	projectPath := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, proj.Name)
 
 	response, err := http.Post( projectPath, "application/json", nil)
@@ -36,7 +32,7 @@ func (c *Client) create_project(proj *Project) error{
 	return nil
 }
 
-func (c *Client) delete_project(proj *Project) error {
+func DeleteProject(proj *lib.Project) error {
 	projectPath := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, proj.Name)
 
 	response, err := lib.Delete(projectPath)
@@ -54,7 +50,7 @@ func (c *Client) delete_project(proj *Project) error {
 }
 
 
-func (c *Client) rename_project(proj *Project, new string) error{
+func RenameProject(proj *lib.Project, new string) error{
 	projectPath := fmt.Sprintf("%s/projects/%s?rename=%s", lib.OSTRICHDB_ADDRESS, proj.Name, new)
 
 	response, err := lib.Put(projectPath)
@@ -69,11 +65,10 @@ func (c *Client) rename_project(proj *Project, new string) error{
 	}
 
 	return nil
-
 }
 
 
-func (c *Client) list_projects() ([]string, error){
+func ListProjects() ([]string, error){
 	projectPath := fmt.Sprintf("%s/projects", lib.OSTRICHDB_ADDRESS)
 
 	response, err := http.Get(projectPath)

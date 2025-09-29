@@ -1,28 +1,21 @@
 package sdk
 
-import "./lib"
+import "../lib"
 import (
     "fmt"
     "net/http"
 )
 
 
-type Collection struct {
-    Client *Client
-    ProjectName string
-    Name string
-}
-
-
-func (c *Client) NewCollectionBuilder (proj *Project, collectionName string) *Collection{
-	return &Collection{
-		Client: c,
+func NewCollectionBuilder (proj *lib.Project, collectionName string) *lib.Collection{
+	return &lib.Collection{
+		Client: proj.Client,
 		ProjectName: proj.Name,
 		Name: collectionName,
 	}
 }
 
-func (c *Client) CreateCollection(collection *Collection) error {
+func CreateCollection(collection *lib.Collection) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
 
 	response, err:=  http.Post(path, "application/json", nil)
@@ -39,7 +32,7 @@ func (c *Client) CreateCollection(collection *Collection) error {
 	return nil
 }
 
-func (c *Client) ListCollections(project *Project) error {
+func ListCollections(project *lib.Project) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections", lib.OSTRICHDB_ADDRESS, project.Name)
 
 	response, err:=  http.Get(path)
@@ -57,7 +50,7 @@ func (c *Client) ListCollections(project *Project) error {
 }
 
 
-func (c *Client) DeleteCollection(collection *Collection) error {
+func DeleteCollection(collection *lib.Collection) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
 
 	response, err:=  lib.Delete(path)
@@ -75,7 +68,7 @@ func (c *Client) DeleteCollection(collection *Collection) error {
 }
 
 
-func (c *Client) RenameCollection(collection *Collection, new string) error {
+func RenameCollection(collection *lib.Collection, new string) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name, new)
 
 	response, err:=  lib.Put(path)
@@ -86,7 +79,7 @@ func (c *Client) RenameCollection(collection *Collection, new string) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to rename collection: %s to %s", collection.Name, collection.ProjectName, new)
+		return fmt.Errorf("Failed to rename collection: %s in project: &s to %s", collection.Name, collection.ProjectName, new)
 	}
 
 	return nil

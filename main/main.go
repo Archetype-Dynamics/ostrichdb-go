@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"../lib"
-	"../sdk"
+	"../src/lib"
+	"../src/sdk"
 )
 
 
