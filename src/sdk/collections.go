@@ -1,6 +1,6 @@
 package sdk
 
-import "../lib"
+import "ostrichdb-go/src/lib"
 import (
     "fmt"
     "net/http"
