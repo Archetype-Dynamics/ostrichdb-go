@@ -2,8 +2,8 @@ package sdk
 
 import "ostrichdb-go/src/lib"
 import (
+	"net/http"
     "fmt"
-    "net/http"
 )
 
 
@@ -22,7 +22,7 @@ func CreateCluster (cluster *lib.Cluster) error {
 
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, projName, collectionName, cluster.Name )
 
-	response, err:= http.Post(path, "application/json", nil)
+	response, err:= lib.Post(cluster.Client, path, "application/json", nil)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func DeleteCluster (cluster *lib.Cluster) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, projName, collectionName, cluster.Name )
 
 
-	response, err:= lib.Delete(path)
+	response, err:= lib.Delete(cluster.Client, path)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func RenameCluster(cluster *lib.Cluster, new string) error{
 	collectionName:= cluster.Collection.Name
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s?rename=%s", lib.OSTRICHDB_ADDRESS, projName, collectionName, cluster.Name, new)
 
-	response, err:= lib.Put(path)
+	response, err:= lib.Put(cluster.Client, path)
 	if err != nil {
 		return err
 	}

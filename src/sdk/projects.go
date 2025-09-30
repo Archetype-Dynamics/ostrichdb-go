@@ -2,8 +2,8 @@ package sdk
 
 import "ostrichdb-go/src/lib"
 import (
+	"net/http"
     "fmt"
-    "net/http"
 )
 
 
@@ -18,7 +18,7 @@ func NewProjectBuilder(c *lib.Client ,projName string) *lib.Project{
 func CreateProject(proj *lib.Project) error{
 	projectPath := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, proj.Name)
 
-	response, err := http.Post( projectPath, "application/json", nil)
+	response, err := lib.Post(proj.Client, projectPath, "application/json", nil)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func CreateProject(proj *lib.Project) error{
 func DeleteProject(proj *lib.Project) error {
 	projectPath := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, proj.Name)
 
-	response, err := lib.Delete(projectPath)
+	response, err := lib.Delete(proj.Client, projectPath)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func DeleteProject(proj *lib.Project) error {
 func RenameProject(proj *lib.Project, new string) error{
 	projectPath := fmt.Sprintf("%s/projects/%s?rename=%s", lib.OSTRICHDB_ADDRESS, proj.Name, new)
 
-	response, err := lib.Put(projectPath)
+	response, err := lib.Put(proj.Client, projectPath)
 	if err != nil {
 		return err
 	}
@@ -68,10 +68,10 @@ func RenameProject(proj *lib.Project, new string) error{
 }
 
 
-func ListProjects() ([]string, error){
+func ListProjects(client *lib.Client) ([]string, error){
 	projectPath := fmt.Sprintf("%s/projects", lib.OSTRICHDB_ADDRESS)
 
-	response, err := http.Get(projectPath)
+	response, err := lib.Get(client, projectPath)
 	if err != nil {
 		return []string{}, err
 	}

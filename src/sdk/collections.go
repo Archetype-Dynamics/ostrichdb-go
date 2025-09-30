@@ -2,8 +2,8 @@ package sdk
 
 import "ostrichdb-go/src/lib"
 import (
+	"net/http"
     "fmt"
-    "net/http"
 )
 
 
@@ -18,7 +18,7 @@ func NewCollectionBuilder (proj *lib.Project, collectionName string) *lib.Collec
 func CreateCollection(collection *lib.Collection) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
 
-	response, err:=  http.Post(path, "application/json", nil)
+	response, err:=  lib.Post(collection.Client, path, "application/json", nil)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func CreateCollection(collection *lib.Collection) error {
 func ListCollections(project *lib.Project) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections", lib.OSTRICHDB_ADDRESS, project.Name)
 
-	response, err:=  http.Get(path)
+	response, err:=  lib.Get(project.Client, path)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func ListCollections(project *lib.Project) error {
 func DeleteCollection(collection *lib.Collection) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
 
-	response, err:=  lib.Delete(path)
+	response, err:=  lib.Delete(collection.Client, path)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func DeleteCollection(collection *lib.Collection) error {
 func RenameCollection(collection *lib.Collection, new string) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name, new)
 
-	response, err:=  lib.Put(path)
+	response, err:=  lib.Put(collection.Client, path)
 	if err != nil {
 		return err
 	}
