@@ -1,9 +1,10 @@
 package sdk
 
-import "ostrichdb-go/src/lib"
 import (
+	"strconv"
+	"fmt"
 	"net/http"
-    "fmt"
+	"ostrichdb-go/src/lib"
 )
 
 
@@ -80,4 +81,13 @@ func RenameCluster(cluster *lib.Cluster, new string) error{
 	}
 
 	return nil
+}
+
+
+func GetClusterCount(collection *lib.Collection) int{
+	info := GetCollectionInfo(collection)
+ 	countStr:= info.ClusterCount
+
+  count, _:= strconv.Atoi(countStr)
+  return count
 }

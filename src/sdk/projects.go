@@ -25,7 +25,7 @@ func CreateProject(proj *lib.Project) error{
 
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
+	if response.StatusCode != http.StatusCreated {
 		return fmt.Errorf("Failed to create project: %s, got status code: %d", proj.Name,response.StatusCode)
 	}
 

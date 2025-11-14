@@ -1,9 +1,11 @@
 package sdk
 
-import "ostrichdb-go/src/lib"
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
-    "fmt"
+	"ostrichdb-go/src/lib"
 )
 
 
@@ -25,7 +27,7 @@ func CreateCollection(collection *lib.Collection) error {
 
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
+	if response.StatusCode != http.StatusCreated {
 		return fmt.Errorf("Failed to create collection %s: in project: %s", collection.Name, collection.ProjectName)
 	}
 
@@ -83,4 +85,36 @@ func RenameCollection(collection *lib.Collection, new string) error {
 	}
 
 	return nil
+}
+
+
+type CollectionInfo struct {
+	Name string `json:"name,omitempty"`
+	ClusterCount  string `json:"cluster_count,omitempty"`
+	RecordCount string `json:"record_count,omitempty"`
+	Size string `json:"size,omitempty"`
+}
+
+func GetCollectionInfo(collection *lib.Collection) CollectionInfo{
+	var collectionInfo CollectionInfo
+
+	projName:= collection.ProjectName
+	colName:= collection.Name
+
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, projName, colName)
+	fmt.Println(path)
+	response, _:= lib.Get(collection.Client, path)
+	defer response.Body.Close()
+
+	fmt.Println("Getting response.Header: ", response.Header)
+	fmt.Println("Getting response.Body: ", response.Body)
+
+	resBody, _ := io.ReadAll(response.Body)
+	// fmt.Printf("data: %s\n",resBody)
+	unmarshalError:= json.Unmarshal(resBody, &collectionInfo)
+	if unmarshalError != nil {
+		return collectionInfo
+	}
+
+	return collectionInfo
 }
