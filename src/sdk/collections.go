@@ -7,20 +7,44 @@ import (
 	"net/http"
 	"ostrichdb-go/src/lib"
 )
+/*
+ *  Author: Marshall A Burns
+ *  GitHub: @SchoolyB
+ *
+ *  Copyright (c) 2025-Present Archetype Dynamics, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
-
-func NewCollectionBuilder (proj *lib.Project, collectionName string) *lib.Collection{
+ //Builds a pointer to Collection of the given name (n)
+ // Passed a pointer to a Project (p)
+func NewCollectionBuilder (p *lib.Project, n string) *lib.Collection{
 	return &lib.Collection{
-		Client: proj.Client,
-		ProjectName: proj.Name,
-		Name: collectionName,
+		Project : p,
+		Name: n,
 	}
 }
 
-func CreateCollection(collection *lib.Collection) error {
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
+// Sends a POST request over the OstrichDB server
+// to create a new Collection (c) in a Project
+func CreateCollection(c *lib.Collection) error {
+	client:= c.Project.Client
+	pName:= c.Project.Name
+	colName:= c.Name
 
-	response, err:=  lib.Post(collection.Client, path, "application/json", nil)
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
+
+	response, err:=  lib.Post(client, path, "application/json", nil)
 	if err != nil {
 		return err
 	}
@@ -28,16 +52,21 @@ func CreateCollection(collection *lib.Collection) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusCreated {
-		return fmt.Errorf("Failed to create collection %s: in project: %s", collection.Name, collection.ProjectName)
+		return fmt.Errorf("Failed to create collection %s: in project: %s", colName, pName)
 	}
 
 	return nil
 }
 
-func ListCollections(project *lib.Project) error {
-	path:= fmt.Sprintf("%s/projects/%s/collections", lib.OSTRICHDB_ADDRESS, project.Name)
+// Sends a GET request over the OstrichDB server
+// to fetch a list of all Collections within a Project (p)
+func ListCollections(p *lib.Project) error {
+	client:= p.Client
+	pName:= p.Name
 
-	response, err:=  lib.Get(project.Client, path)
+	path:= fmt.Sprintf("%s/projects/%s/collections", lib.OSTRICHDB_ADDRESS, pName)
+
+	response, err:=  lib.Get(client, path)
 	if err != nil {
 		return err
 	}
@@ -45,17 +74,22 @@ func ListCollections(project *lib.Project) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to get collections in project: %s ", project.Name)
+		return fmt.Errorf("Failed to get collections in project: %s ", pName)
 	}
 
 	return nil
 }
 
+// Sends a DELETE request over the OstrichDB server
+// to remove Collection (c) from a Project
+func DeleteCollection(c *lib.Collection) error {
+	client:= c.Project.Client
+	pName:= c.Project.Name
+	colName:= c.Name
 
-func DeleteCollection(collection *lib.Collection) error {
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name)
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
 
-	response, err:=  lib.Delete(collection.Client, path)
+	response, err:=  lib.Delete(client, path)
 	if err != nil {
 		return err
 	}
@@ -63,17 +97,22 @@ func DeleteCollection(collection *lib.Collection) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to delete collection %s: in project: %s", collection.Name, collection.ProjectName)
+		return fmt.Errorf("Failed to delete collection %s: in project: %s", colName, pName)
 	}
 
 	return nil
 }
 
+// Sends a PUT request over the OstrichDB server
+// to rename a Collection (c) to (new)
+func RenameCollection(c *lib.Collection, new string) error {
+	client:= c.Project.Client
+	pName:= c.Project.Name
+	colName:= c.Name
 
-func RenameCollection(collection *lib.Collection, new string) error {
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", lib.OSTRICHDB_ADDRESS, collection.ProjectName, collection.Name, new)
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", lib.OSTRICHDB_ADDRESS, pName, colName, new)
 
-	response, err:=  lib.Put(collection.Client, path)
+	response, err:=  lib.Put(client, path)
 	if err != nil {
 		return err
 	}
@@ -81,36 +120,27 @@ func RenameCollection(collection *lib.Collection, new string) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to rename collection: %s in project: &s to %s", collection.Name, collection.ProjectName, new)
+		return fmt.Errorf("Failed to rename collection: %s in project: %s to %s", colName, pName, new)
 	}
 
 	return nil
 }
 
+// Sends a GET request over the OstrichDB server
+// to fetch a Collection's (c) metadata
+func GetCollectionInfo(c *lib.Collection) lib.CollectionInfo{
+	var collectionInfo lib.CollectionInfo
 
-type CollectionInfo struct {
-	Name string `json:"name,omitempty"`
-	ClusterCount  string `json:"cluster_count,omitempty"`
-	RecordCount string `json:"record_count,omitempty"`
-	Size string `json:"size,omitempty"`
-}
+	client:= c.Project.Client
+	pName:= c.Project.Name
+	colName:= c.Name
 
-func GetCollectionInfo(collection *lib.Collection) CollectionInfo{
-	var collectionInfo CollectionInfo
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
 
-	projName:= collection.ProjectName
-	colName:= collection.Name
-
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, projName, colName)
-	fmt.Println(path)
-	response, _:= lib.Get(collection.Client, path)
+	response, _:= lib.Get(client, path)
 	defer response.Body.Close()
-
-	fmt.Println("Getting response.Header: ", response.Header)
-	fmt.Println("Getting response.Body: ", response.Body)
 
 	resBody, _ := io.ReadAll(response.Body)
-	// fmt.Printf("data: %s\n",resBody)
 	unmarshalError:= json.Unmarshal(resBody, &collectionInfo)
 	if unmarshalError != nil {
 		return collectionInfo
