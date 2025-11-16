@@ -67,3 +67,31 @@ type CollectionInfo struct {
 	RecordCount string `json:"record_count,omitempty"`
 	Size string `json:"size,omitempty"`
 }
+
+//Record Types enum see const.go
+type RecordType int
+
+//Record Types mapped to string val for storage. See const.go
+var RecordTypeStrings = map[RecordType]string{
+	NULL: "NULL",
+	CHAR: "CHAR",
+	STRING: "STRING",
+	INTEGER: "INTEGER",
+	FLOAT: "FLOAT",
+	BOOLEAN: "BOOLEAN",
+	DATE: "DATE",
+	TIME: "TIME",
+	DATETIME: "DATETIME",
+	UUID: "UUID",
+	CHAR_ARRAY: "[]CHAR",
+	STRING_ARRAY: "[]STRING",
+	INTEGER_ARRAY: "[]INTEGER",
+	FLOAT_ARRAY: "[]FLOAT",
+	BOOLEAN_ARRAY: "[]BOOLEAN",
+	DATE_ARRAY: "[]DATE",
+	TIME_ARRAY: "[]TIME",
+	DATETIME_ARRAY: "[]DATETIME",
+	UUID_ARRAY: "[]UUID",
+}
+
+
