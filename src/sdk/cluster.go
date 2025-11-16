@@ -103,7 +103,7 @@ func FetchCluster(c *lib.Cluster)error{
 
 
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to delete cluster %s: in collection %s in project: %s", cluName, colName, pName)
+		return fmt.Errorf("Failed to fetch cluster %s: in collection %s in project: %s", cluName, colName, pName)
 	}
 
 	return nil
