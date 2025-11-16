@@ -59,7 +59,7 @@ func CreateCluster (c *lib.Cluster) error {
 	return nil
 }
 
-// Sends a Delete request over the OstrichDB server
+// Sends a DELETE request over the OstrichDB server
 // to remove a Cluster (c) from a Collection
 func DeleteCluster ( c *lib.Cluster) error {
 	client:= c.Collection.Project.Client
@@ -70,6 +70,31 @@ func DeleteCluster ( c *lib.Cluster) error {
 	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName )
 
 	response, err:= lib.Delete(client, path)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("Failed to delete cluster %s: in collection %s in project: %s", cluName, colName, pName)
+	}
+
+	return nil
+}
+
+// Sends a GET request over the OstrichDB server
+// to  fetch specific data from a Cluster (c) from a Collection
+func FetchCluster(c *lib.Cluster)error{
+	client:= c.Collection.Project.Client
+	pName:= c.Collection.Project.Name
+	colName:= c.Collection.Name
+	cluName:= c.Name
+
+	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName )
+
+	response, err:= lib.Get(client, path)
 	if err != nil {
 		return err
 	}
