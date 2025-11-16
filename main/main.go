@@ -1,4 +1,5 @@
 package main
+
 /*
  *  Author: Marshall A Burns
  *  GitHub: @SchoolyB
@@ -20,6 +21,7 @@ package main
 
 import (
 	"fmt"
+	"ostrichdb-go/src/lib"
 	"ostrichdb-go/src/sdk"
 )
 
@@ -67,7 +69,7 @@ func main() {
 	// Each record has a name, type, and value
 
 	// Create a username record
-	usernameRecord := sdk.NewRecordBuilder(cluster, "username", "string", "johndoe")
+	usernameRecord := sdk.NewRecordBuilder(cluster, "username", lib.RecordTypeStrings[lib.STRING], "johndoe")
 	if err := sdk.CreateRecord(usernameRecord); err != nil {
 		fmt.Println("Error creating username record:", err)
 		return
@@ -75,7 +77,7 @@ func main() {
 	fmt.Println("✓ Username record created")
 
 	// Create an email record
-	emailRecord := sdk.NewRecordBuilder(cluster, "email", "string", "john@example.com")
+	emailRecord := sdk.NewRecordBuilder(cluster, "email", lib.RecordTypeStrings[lib.STRING], "john@example.com")
 	if err := sdk.CreateRecord(emailRecord); err != nil {
 		fmt.Println("Error creating email record:", err)
 		return
@@ -83,7 +85,7 @@ func main() {
 	fmt.Println("✓ Email record created")
 
 	// Create an age record (integer type)
-	ageRecord := sdk.NewRecordBuilder(cluster, "age", "integer", "30")
+	ageRecord := sdk.NewRecordBuilder(cluster, lib.RecordTypeStrings[lib.INTEGER], "integer", "30")
 	if err := sdk.CreateRecord(ageRecord); err != nil {
 		fmt.Println("Error creating age record:", err)
 		return
