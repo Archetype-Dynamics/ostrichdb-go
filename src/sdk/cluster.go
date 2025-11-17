@@ -3,7 +3,9 @@ package sdk
 import (
 	"strconv"
 	"fmt"
+	"io"
 	"net/http"
+	"encoding/json"
 	"ostrichdb-go/src/lib"
 )
 /*
@@ -85,8 +87,9 @@ func DeleteCluster ( c *lib.Cluster) error {
 }
 
 // Sends a GET request over the OstrichDB server
-// to  fetch specific data from a Cluster (c) from a Collection
-func FetchCluster(c *lib.Cluster)error{
+// to fetch all data(Records) from within a Cluster (c)
+// TODO: KEep working on this
+func FetchCluster(c *lib.Cluster) (string, error){
 	client:= c.Collection.Project.Client
 	pName:= c.Collection.Project.Name
 	colName:= c.Collection.Name
@@ -96,17 +99,29 @@ func FetchCluster(c *lib.Cluster)error{
 
 	response, err:= lib.Get(client, path)
 	if err != nil {
-		return err
+		return "GET Error", err
 	}
 
 	defer response.Body.Close()
 
-
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to fetch cluster %s: in collection %s in project: %s", cluName, colName, pName)
+		return "Status not ok error", fmt.Errorf("Failed to fetch cluster %s: in collection %s in project: %s", cluName, colName, pName)
 	}
 
-	return nil
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "io Error", fmt.Errorf("ERROR getting content")
+	}
+
+	var cluster lib.Cluster
+	unMarshallError:= json.Unmarshal(body, &cluster)
+	if unMarshallError != nil {
+		return "Unmarshal Error", unMarshallError
+	}
+	fmt.Println("CLUSTER: ", cluster)
+
+	//TODO: instead of formating this to a string need to unmarshal this JSON into  a Record struct
+	return fmt.Sprintf("%s", body), nil
 }
 
 // Sends a PUT request over the OstrichDB server
