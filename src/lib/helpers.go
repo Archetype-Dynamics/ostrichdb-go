@@ -74,20 +74,71 @@ func Get(c *Client, p string) (*http.Response, error) {
 }
 
 
-// Simple path builder that takes the passed inname or names (n)
-// and assigns them to a valide OstrichDB endpoint.
-// Cannot be used for operations dealing with Record type or values.
-
-func PathBuilder(n ...string) string {
-	switch(len(n)){
-		case 1:
-			return fmt.Sprintf("%s/projects/%s", OSTRICHDB_ADDRESS, n[0])
-		case 2:
-			return fmt.Sprintf("%s/projects/%s/collections/%s", OSTRICHDB_ADDRESS, n[0], n[1])
-		case 3:
-			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", OSTRICHDB_ADDRESS, n[0], n[1], n[2])
-		case 4:
-			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s", OSTRICHDB_ADDRESS, n[0], n[1], n[2], n[3])
+// Depending on the QueryType(qt), Uses the passed in values (v)
+// to construct a valid OstrichDB endpoint.
+func PathBuilder(qt QueryType,v ...string) string {
+	switch(qt){
+		case TYPE:
+			if len(v) != 5{
+				fmt.Printf("Incorrect number of values provided. Got %d expected 5\n", len(v))
+				return ""
+			}
+			//Enusre the provided type is valid
+			isValidDataType := false
+			for _, dataType := range RecordTypeStrings {
+				if v[4] == dataType {
+					isValidDataType = true
+					break
+				}
+			}
+			if !isValidDataType {
+				fmt.Printf("Invalid record type '%s' provided\n", v[5])
+				return ""
+			}
+			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4])
+		case VALUE:
+			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?value=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4])
+		case RENAME:
+			switch(len(v)){
+				case 3: //renaming a collection
+					return fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2])
+				case 4: //renaming a cluster
+					return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s?rename=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3])
+				case 5: //renaming a record
+					return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?rename=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4])
+				default:
+					fmt.Println("Invalid number of values provided while trying to rename. Defaulting")
+					return ""
+			}
+		case TYPE_VALUE:
+			if len(v) != 6{
+				fmt.Printf("Incorrect number of values provided. Got %d expected 6\n", len(v))
+				return ""
+			}
+			isValidDataType:= false
+			for _, dataType := range RecordTypeStrings{
+				if v[4] == dataType {
+					isValidDataType = true
+					break
+				}
+			}
+			if !isValidDataType {
+				fmt.Printf("Invalid record type '%s' provided\n", v[5])
+				return ""
+			}
+			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s&value=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4], v[5])
+		case NONE:
+			switch(len(v)){
+				case 1:
+					return fmt.Sprintf("%s/projects/%s", OSTRICHDB_ADDRESS, v[0])
+				case 2:
+					return fmt.Sprintf("%s/projects/%s/collections/%s", OSTRICHDB_ADDRESS, v[0], v[1])
+				case 3:
+					return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2])
+				case 4:
+					return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3])
+			}
 	}
+
 	return "Invalid number of names provided to PathBuilder()"
 }
