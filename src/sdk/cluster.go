@@ -1,13 +1,15 @@
 package sdk
 
 import (
-	"strconv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"encoding/json"
 	"ostrichdb-go/src/lib"
+	"strconv"
+
 )
+
 /*
  *  Author: Marshall A Burns
  *  GitHub: @SchoolyB
@@ -44,7 +46,7 @@ func CreateCluster (c *lib.Cluster) error {
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= lib.PathBuilder(lib.NONE,pName, colName, cluName)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_NONE,pName, colName, cluName)
 
 	response, err:= lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -69,7 +71,7 @@ func DeleteCluster ( c *lib.Cluster) error {
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= lib.PathBuilder(lib.NONE, pName, colName, cluName)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_NONE, pName, colName, cluName)
 
 	response, err:= lib.Delete(client, path)
 	if err != nil {
@@ -89,39 +91,39 @@ func DeleteCluster ( c *lib.Cluster) error {
 // Sends a GET request over the OstrichDB server
 // to fetch all data(Records) from within a Cluster (c)
 // TODO: KEep working on this
-func FetchCluster(c *lib.Cluster) (string, error){
+func FetchCluster(c *lib.Cluster) (*lib.Cluster, error){
+	var cluster *lib.Cluster
+
 	client:= c.Collection.Project.Client
 	pName:= c.Collection.Project.Name
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= lib.PathBuilder(lib.NONE,pName, colName, cluName)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_NONE,pName, colName, cluName)
 
 	response, err:= lib.Get(client, path)
 	if err != nil {
-		return "GET Error", err
+		return cluster, err
 	}
 
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return "Status not ok error", fmt.Errorf("Failed to fetch cluster %s: in collection %s in project: %s", cluName, colName, pName)
+		return cluster, fmt.Errorf("Failed to fetch cluster %s: in collection %s in project: %s", cluName, colName, pName)
 	}
 
-	body, err := io.ReadAll(response.Body)
+	data, err := io.ReadAll(response.Body)
 	if err != nil {
-		return "io Error", fmt.Errorf("ERROR getting content")
+		return cluster, fmt.Errorf("Failed to fetch Cluster of name: %s", cluName)
 	}
 
-	var cluster lib.Cluster
-	unMarshallError:= json.Unmarshal(body, &cluster)
-	if unMarshallError != nil {
-		return "Unmarshal Error", unMarshallError
-	}
-	fmt.Println("CLUSTER: ", cluster)
 
-	//TODO: instead of formating this to a string need to unmarshal this JSON into  a Record struct
-	return fmt.Sprintf("%s", body), nil
+	err = json.Unmarshal(data, &cluster)
+	if err != nil {
+		return cluster, err
+	}
+
+	return cluster, nil
 }
 
 // Sends a PUT request over the OstrichDB server
@@ -132,7 +134,7 @@ func RenameCluster(c *lib.Cluster, new string) error{
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= lib.PathBuilder(lib.RENAME, pName, colName,cluName, new)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_RENAME, pName, colName,cluName, new)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
@@ -148,8 +150,39 @@ func RenameCluster(c *lib.Cluster, new string) error{
 	return nil
 }
 
-//Todo: Finish me
-func ListClusters(collection *lib.Collection){}
+
+func ListClusters(c *lib.Collection) (lib.ClusterInfo, error){
+	var clusterInfo lib.ClusterInfo
+
+	client:= c.Project.Client
+	pName:= c.Project.Name
+	colName:= c.Name
+
+
+	path:= lib.PathBuilder(lib.TIER, pName, colName)
+
+	response, err:= lib.Get(client,path)
+
+	if err != nil {
+		return clusterInfo, err
+	}
+
+	if response.StatusCode != http.StatusOK{
+		return clusterInfo, fmt.Errorf("Error getting cluster information from Collection named: %s", colName)
+	}
+
+	data, err:= io.ReadAll(response.Body)
+	if err != nil || len(data) == 0 {
+		return clusterInfo, err
+	}
+
+	err =  json.Unmarshal(data, &clusterInfo)
+	if err != nil {
+		return clusterInfo, err
+	}
+
+	return clusterInfo, nil
+}
 
 // This helper used to get a Collection's (c) info
 // specifially the count of clusters within (c)

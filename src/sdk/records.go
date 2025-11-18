@@ -1,10 +1,13 @@
 package sdk
 
-import "ostrichdb-go/src/lib"
 import (
-    "fmt"
-    "net/http"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"ostrichdb-go/src/lib"
 )
+
 /*
  *  Author: Marshall A Burns
  *  GitHub: @SchoolyB
@@ -24,8 +27,8 @@ import (
  *  limitations under the License.
  */
 
- //Builds a pointer to Record of the given name (n) within a Cluster (clu)
- // with the type (t) and the value (v)
+//Builds a pointer to Record of the given name (n) within a Cluster (clu)
+// with the type (t) and the value (v)
 func NewRecordBuilder(clu *lib.Cluster,n string,t string, v string) *lib.Record{
 	return &lib.Record{
 		Cluster: clu,
@@ -46,7 +49,7 @@ func CreateRecord(r *lib.Record) error{
 	rType:= r.Type
 	rVal:= r.Value
 
-	path:= lib.PathBuilder(lib.TYPE_VALUE,pName, colName, cluName, rName, rType, rVal)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_TYPE_AND_VALUE,pName, colName, cluName, rName, rType, rVal)
 
 	response, err:= lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -63,6 +66,40 @@ func CreateRecord(r *lib.Record) error{
 	return nil
 }
 
+
+func FetchRecord(r *lib.Record)(*lib.Record, error){
+	var record *lib.Record
+
+	client:= r.Cluster.Collection.Project.Client
+	pName:= r.Cluster.Collection.Project.Name
+	colName:= r.Cluster.Collection.Name
+	cluName:= r.Cluster.Name
+	rName:= r.Name
+
+	path:= lib.PathBuilder(lib.QUERY_PARAM_NONE, pName, colName, cluName, rName)
+
+	response, err:= lib.Get(client, path)
+	if err != nil {
+		return record, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return record, fmt.Errorf("Failed to fetch Record of name: %s", rName)
+	}
+
+	data, err:= io.ReadAll(response.Body)
+	if err != nil {
+		return record, err
+	}
+
+	err = json.Unmarshal(data, &record)
+	if err != nil {
+		return record, err
+	}
+
+	return record, nil
+}
+
 // Sends a DELETE request over the OstrichDB server
 // to remove a Record (r) from a Cluster
 func DeleteRecord(r *lib.Record)	error {
@@ -72,7 +109,7 @@ func DeleteRecord(r *lib.Record)	error {
 	cluName:= r.Cluster.Name
 	rName:= r.Name
 
-	path:= lib.PathBuilder(lib.NONE, pName, colName, cluName, rName)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_NONE, pName, colName, cluName, rName)
 
 	response, err:= lib.Delete(client, path)
 	if err != nil {
@@ -98,7 +135,7 @@ func RenameRecord(r *lib.Record, new string)error{
 	rName:= r.Name
 
 
-	path:= lib.PathBuilder(lib.RENAME,pName, colName, cluName, rName, new)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_RENAME,pName, colName, cluName, rName, new)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
@@ -125,7 +162,7 @@ func UpdateRecordType(r *lib.Record, t lib.RecordType)error{
 	rName:= r.Name
 	rType:= lib.RecordTypeStrings[t]
 
-	path:= lib.PathBuilder(lib.TYPE,pName, colName, cluName, rName, rType)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_TYPE,pName, colName, cluName, rName, rType)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
@@ -151,7 +188,7 @@ func UpdateRecordValue(r *lib.Record, v string) error {
 	rName:= r.Name
 	rValue:= v
 
-	path:= lib.PathBuilder(lib.RENAME,pName, colName, cluName, rName, rValue)
+	path:= lib.PathBuilder(lib.QUERY_PARAM_RENAME,pName, colName, cluName, rName, rValue)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
