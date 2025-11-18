@@ -1,8 +1,11 @@
 package lib
+
 import (
-	"net/http"
+	"fmt"
 	"io"
+	"net/http"
 )
+
 /*
  *  Author: Marshall A Burns
  *  GitHub: @SchoolyB
@@ -68,4 +71,23 @@ func Get(c *Client, p string) (*http.Response, error) {
     }
     req.Header.Set("Authorization", "Bearer " + c.ApiKey)
     return c.HTTPClient.Do(req)
+}
+
+
+// Simple path builder that takes the passed inname or names (n)
+// and assigns them to a valide OstrichDB endpoint.
+// Cannot be used for operations dealing with Record type or values.
+
+func PathBuilder(n ...string) string {
+	switch(len(n)){
+		case 1:
+			return fmt.Sprintf("%s/projects/%s", OSTRICHDB_ADDRESS, n[0])
+		case 2:
+			return fmt.Sprintf("%s/projects/%s/collections/%s", OSTRICHDB_ADDRESS, n[0], n[1])
+		case 3:
+			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", OSTRICHDB_ADDRESS, n[0], n[1], n[2])
+		case 4:
+			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s", OSTRICHDB_ADDRESS, n[0], n[1], n[2], n[3])
+	}
+	return "Invalid number of names provided to PathBuilder()"
 }
