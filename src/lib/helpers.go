@@ -74,11 +74,11 @@ func Get(c *Client, p string) (*http.Response, error) {
 }
 
 
-// Depending on the QueryType(qt), Uses the passed in values (v)
+// Depending on the PathType(pt), Uses the passed in values (v)
 // to construct a valid OstrichDB endpoint.
-func PathBuilder(qt QueryType,v ...string) string {
-	switch(qt){
-		case TYPE:
+func PathBuilder(pt PathType,v ...string) string {
+	switch(pt){
+		case QUERY_PARAM_TYPE:
 			if len(v) != 5{
 				fmt.Printf("Incorrect number of values provided. Got %d expected 5\n", len(v))
 				return ""
@@ -96,9 +96,9 @@ func PathBuilder(qt QueryType,v ...string) string {
 				return ""
 			}
 			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4])
-		case VALUE:
+		case QUERY_PARAM_VALUE:
 			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?value=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4])
-		case RENAME:
+		case QUERY_PARAM_RENAME:
 			switch(len(v)){
 				case 3: //renaming a collection
 					return fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2])
@@ -110,7 +110,7 @@ func PathBuilder(qt QueryType,v ...string) string {
 					fmt.Println("Invalid number of values provided while trying to rename. Defaulting")
 					return ""
 			}
-		case TYPE_VALUE:
+		case QUERY_PARAM_TYPE_AND_VALUE:
 			if len(v) != 6{
 				fmt.Printf("Incorrect number of values provided. Got %d expected 6\n", len(v))
 				return ""
@@ -127,7 +127,7 @@ func PathBuilder(qt QueryType,v ...string) string {
 				return ""
 			}
 			return fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s&value=%s", OSTRICHDB_ADDRESS, v[0], v[1], v[2], v[3], v[4], v[5])
-		case NONE:
+		case QUERY_PARAM_NONE:
 			switch(len(v)){
 				case 1:
 					return fmt.Sprintf("%s/projects/%s", OSTRICHDB_ADDRESS, v[0])

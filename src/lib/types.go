@@ -48,16 +48,16 @@ type Collection struct {
 
 // Grouping of related records within a collection.
 type Cluster struct{
-	Collection *Collection
-	Name string
+	Collection *Collection`json:"-"`
+	Name string `json:"name"`
 }
 
 // An individual data entry within a cluster. Must have a name, type AND value
 type Record struct {
-	Cluster *Cluster
-	Name string
-	Type string
-	Value string
+	Cluster *Cluster `json:"-"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Value string `json:"value"`
 }
 
 // Holds metadata and statistics about a collection.
@@ -66,6 +66,19 @@ type CollectionInfo struct {
 	ClusterCount  string `json:"cluster_count,omitempty"`
 	RecordCount string `json:"record_count,omitempty"`
 	Size string `json:"size,omitempty"`
+}
+
+type ClusterInfo struct {
+	Name string `json:"name"`
+	ID int `json:"id"`
+	RecordCount int `json:"record_count"`
+}
+
+type RecordInfo struct{
+	ID int `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Value string `json:"value"`
 }
 
 //Record Types enum see const.go
@@ -95,19 +108,24 @@ var RecordTypeStrings = map[RecordType]string{
 }
 
 
-//Represents the 3 common query params that are used
-//when hitting OstrichDB endpoints.
-//None: If there arent any...
-//Type: When updating a Records type
-//Value: When updating a Records Value
-//Type_Value: When assigning a type AND value during Record creation
-//Rename: For Collections, Clusters, and Records
-type QueryType int
+//Special type that helps modify an OsitrchDB
+//endpoint via the PathBuilder()
+//Query Param None: If there arent any query params
+//Query Param Type: When updating a Records type
+//Query Param Value: When updating a Records Value
+//Query Param Type & Value: When assigning a type AND value during Record creation
+//Query Param Rename: When renaming Collections, Clusters, and Records
+//Tier: Used when fetching ALL data WITHIN a tier, e.g:
+//  	listing collections in a project,
+// 		listing clusters in a collection, etc
+type PathType int
+
 const (
-	NONE QueryType = iota
-	TYPE
-	VALUE
-	TYPE_VALUE
-	RENAME
+	QUERY_PARAM_NONE PathType = iota
+	QUERY_PARAM_TYPE
+	QUERY_PARAM_VALUE
+	QUERY_PARAM_TYPE_AND_VALUE
+	QUERY_PARAM_RENAME
+	TIER
 
 )
