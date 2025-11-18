@@ -95,3 +95,19 @@ var RecordTypeStrings = map[RecordType]string{
 }
 
 
+//Represents the 3 common query params that are used
+//when hitting OstrichDB endpoints.
+//None: If there arent any...
+//Type: When updating a Records type
+//Value: When updating a Records Value
+//Type_Value: When assigning a type AND value during Record creation
+//Rename: For Collections, Clusters, and Records
+type QueryType int
+const (
+	NONE QueryType = iota
+	TYPE
+	VALUE
+	TYPE_VALUE
+	RENAME
+
+)
