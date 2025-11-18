@@ -42,7 +42,7 @@ func CreateCollection(c *lib.Collection) error {
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= lib.PathBuilder(pName, colName)
+	path:= lib.PathBuilder(lib.NONE, pName, colName)
 
 	response, err:=  lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -64,7 +64,7 @@ func ListCollections(p *lib.Project) error {
 	client:= p.Client
 	pName:= p.Name
 
-	path:= lib.PathBuilder(pName)
+	path:= lib.PathBuilder(lib.NONE, pName)
 
 	response, err:=  lib.Get(client, path)
 	if err != nil {
@@ -87,7 +87,7 @@ func DeleteCollection(c *lib.Collection) error {
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= lib.PathBuilder(pName, colName)
+	path:= lib.PathBuilder(lib.NONE, pName, colName)
 
 	response, err:=  lib.Delete(client, path)
 	if err != nil {
@@ -110,7 +110,7 @@ func RenameCollection(c *lib.Collection, new string) error {
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s?rename=%s", lib.OSTRICHDB_ADDRESS, pName, colName, new)
+	path:= lib.PathBuilder(lib.RENAME, pName, colName, new)
 
 	response, err:=  lib.Put(client, path)
 	if err != nil {
@@ -135,7 +135,7 @@ func GetCollectionInfo(c *lib.Collection) lib.CollectionInfo{
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= lib.PathBuilder(pName, colName)
+	path:= lib.PathBuilder(lib.NONE, pName, colName)
 
 	response, _:= lib.Get(client, path)
 	defer response.Body.Close()

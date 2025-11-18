@@ -46,14 +46,7 @@ func CreateRecord(r *lib.Record) error{
 	rType:= r.Type
 	rVal:= r.Value
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s&value=%s",
-		lib.OSTRICHDB_ADDRESS,
-	 	pName,
-	 	colName,
-	 	cluName,
-		rName,
-		rType,
-		rVal)
+	path:= lib.PathBuilder(lib.TYPE_VALUE,pName, colName, cluName, rName, rType, rVal)
 
 	response, err:= lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -79,7 +72,7 @@ func DeleteRecord(r *lib.Record)	error {
 	cluName:= r.Cluster.Name
 	rName:= r.Name
 
-	path:= lib.PathBuilder(pName, colName, cluName, rName)
+	path:= lib.PathBuilder(lib.NONE, pName, colName, cluName, rName)
 
 	response, err:= lib.Delete(client, path)
 	if err != nil {
@@ -104,7 +97,8 @@ func RenameRecord(r *lib.Record, new string)error{
 	cluName:= r.Cluster.Name
 	rName:= r.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?rename=%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName, rName, new)
+
+	path:= lib.PathBuilder(lib.RENAME,pName, colName, cluName, rName, new)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
@@ -131,7 +125,7 @@ func UpdateRecordType(r *lib.Record, t lib.RecordType)error{
 	rName:= r.Name
 	rType:= lib.RecordTypeStrings[t]
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?type=%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName, rName, rType )
+	path:= lib.PathBuilder(lib.TYPE,pName, colName, cluName, rName, rType)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
@@ -157,7 +151,7 @@ func UpdateRecordValue(r *lib.Record, v string) error {
 	rName:= r.Name
 	rValue:= v
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s?value=%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName, rName, rValue )
+	path:= lib.PathBuilder(lib.RENAME,pName, colName, cluName, rName, rValue)
 
 	response, err:= lib.Put(client, path)
 	if err != nil {
