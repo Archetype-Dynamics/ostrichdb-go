@@ -42,7 +42,7 @@ func CreateCollection(c *lib.Collection) error {
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
+	path:= lib.PathBuilder(pName, colName)
 
 	response, err:=  lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -64,7 +64,7 @@ func ListCollections(p *lib.Project) error {
 	client:= p.Client
 	pName:= p.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections", lib.OSTRICHDB_ADDRESS, pName)
+	path:= lib.PathBuilder(pName)
 
 	response, err:=  lib.Get(client, path)
 	if err != nil {
@@ -87,7 +87,7 @@ func DeleteCollection(c *lib.Collection) error {
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
+	path:= lib.PathBuilder(pName, colName)
 
 	response, err:=  lib.Delete(client, path)
 	if err != nil {
@@ -135,7 +135,7 @@ func GetCollectionInfo(c *lib.Collection) lib.CollectionInfo{
 	pName:= c.Project.Name
 	colName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s", lib.OSTRICHDB_ADDRESS, pName, colName)
+	path:= lib.PathBuilder(pName, colName)
 
 	response, _:= lib.Get(client, path)
 	defer response.Body.Close()

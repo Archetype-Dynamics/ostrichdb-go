@@ -34,7 +34,8 @@ func NewProjectBuilder(c *lib.Client ,n string) *lib.Project{
 
 func CreateProject(p *lib.Project) error{
 	pName:= p.Name
-	path := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, pName)
+
+	path:= lib.PathBuilder(pName)
 
 	response, err := lib.Post(p.Client, path, "application/json", nil)
 	if err != nil {
@@ -53,7 +54,7 @@ func CreateProject(p *lib.Project) error{
 func DeleteProject(p *lib.Project) error {
 	pName:= p.Name
 
-	path := fmt.Sprintf("%s/projects/%s", lib.OSTRICHDB_ADDRESS, pName)
+	path:= lib.PathBuilder(pName)
 
 	response, err := lib.Delete(p.Client, path)
 	if err != nil {

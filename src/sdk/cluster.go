@@ -44,7 +44,7 @@ func CreateCluster (c *lib.Cluster) error {
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName )
+	path:= lib.PathBuilder(pName, colName, cluName)
 
 	response, err:= lib.Post(client, path, "application/json", nil)
 	if err != nil {
@@ -69,7 +69,7 @@ func DeleteCluster ( c *lib.Cluster) error {
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName )
+	path:= lib.PathBuilder(pName, colName, cluName)
 
 	response, err:= lib.Delete(client, path)
 	if err != nil {
@@ -95,7 +95,7 @@ func FetchCluster(c *lib.Cluster) (string, error){
 	colName:= c.Collection.Name
 	cluName:= c.Name
 
-	path:= fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName )
+	path:= lib.PathBuilder(pName, colName, cluName)
 
 	response, err:= lib.Get(client, path)
 	if err != nil {

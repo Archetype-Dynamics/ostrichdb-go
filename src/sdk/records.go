@@ -79,7 +79,7 @@ func DeleteRecord(r *lib.Record)	error {
 	cluName:= r.Cluster.Name
 	rName:= r.Name
 
-	path := fmt.Sprintf("%s/projects/%s/collections/%s/clusters/%s/records/%s", lib.OSTRICHDB_ADDRESS, pName, colName, cluName ,rName)
+	path:= lib.PathBuilder(pName, colName, cluName, rName)
 
 	response, err:= lib.Delete(client, path)
 	if err != nil {
