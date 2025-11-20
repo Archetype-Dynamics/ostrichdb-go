@@ -29,13 +29,14 @@ import (
 
 //Builds a pointer to Record of the given name (n) within a Cluster (clu)
 // with the type (t) and the value (v)
-func NewRecordBuilder(clu *lib.Cluster,n string,t string, v string) *lib.Record{
-	return &lib.Record{
-		Cluster: clu,
-		Name: n,
-		Type: t,
-		Value: v,
-	}
+func NewRecordBuilder(c *lib.Cluster,n string,t lib.RecordType, v string) *lib.Record{
+	var r lib.Record
+	r.Cluster = c
+	r.Name = n
+	r.Type = lib.RecordTypeStrings[t]
+	r.Value = v
+
+	return &r
 }
 
 // Sends a POST request over the OstrichDB server
