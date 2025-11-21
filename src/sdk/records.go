@@ -67,7 +67,9 @@ func CreateRecord(r *lib.Record) error{
 	return nil
 }
 
-
+//Sends a GET request over the OstrichDB server
+// to get all the data of a Record(r), this includes:
+// The Records id, name, type, and value
 func FetchRecord(r *lib.Record)(*lib.Record, error){
 	var record *lib.Record
 

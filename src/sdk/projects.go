@@ -32,6 +32,9 @@ func NewProjectBuilder(c *lib.Client ,n string) *lib.Project{
 	}
 }
 
+//Sends a POST request over the OstrichDB server
+// to create a new Project. Projects are a directory
+// that contains a Collections(databases)
 func CreateProject(p *lib.Project) error{
 	pName:= p.Name
 
@@ -51,6 +54,8 @@ func CreateProject(p *lib.Project) error{
 	return nil
 }
 
+// Sends a DELETE request over the OstrichDB server
+// to delete a Project(p)
 func DeleteProject(p *lib.Project) error {
 	pName:= p.Name
 
@@ -71,6 +76,8 @@ func DeleteProject(p *lib.Project) error {
 }
 
 
+// Sends a PUT request over the OstrichDB server
+// to rename a project. Not commonly used but possible
 func RenameProject(p *lib.Project, new string) error{
 	pName:= p.Name
 
@@ -91,6 +98,8 @@ func RenameProject(p *lib.Project, new string) error{
 }
 
 
+//Sends a GET request over the OstrichDB server to
+// see all Projects a users has created
 func ListProjects(c *lib.Client) ([]string, error){
 	path := fmt.Sprintf("%s/projects", lib.OSTRICHDB_ADDRESS)
 

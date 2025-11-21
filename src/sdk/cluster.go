@@ -90,7 +90,6 @@ func DeleteCluster ( c *lib.Cluster) error {
 
 // Sends a GET request over the OstrichDB server
 // to fetch all data(Records) from within a Cluster (c)
-// TODO: KEep working on this
 func FetchCluster(c *lib.Cluster) (*lib.Cluster, error){
 	var cluster *lib.Cluster
 
@@ -151,6 +150,8 @@ func RenameCluster(c *lib.Cluster, new string) error{
 }
 
 
+// Sends a GET request over the OstrichDB server
+// to fetch all Clusters within a Collection (c)
 func ListClusters(c *lib.Collection) (lib.ClusterInfo, error){
 	var clusterInfo lib.ClusterInfo
 

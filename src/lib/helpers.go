@@ -74,8 +74,10 @@ func Get(c *Client, p string) (*http.Response, error) {
 }
 
 
+// A helper function that constructs an OstrichDB endpoint
 // Depending on the PathType(pt), Uses the passed in values (v)
-// to construct a valid OstrichDB endpoint.
+// for names of data tiers such as Collections
+// as well as types and values for Records
 func PathBuilder(pt PathType,v ...string) string {
 	switch(pt){
 		case QUERY_PARAM_TYPE:
